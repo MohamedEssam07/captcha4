@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image CAPTCHA Project</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .captcha-container {
+            display: inline-block;
+            padding: 20px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .captcha {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .captcha img {
+            width: 100px;
+            height: 100px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .captcha img.selected {
+            border-color: #0288d1;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #0288d1;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0277bd;
+        }
+        .message {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image CAPTCHA Project</h1>
+    <h2>Select Cars</h2>
+    <div class="captcha-container">
+        <div class="captcha" id="captcha"></div>
+        <button onclick="validateCaptcha()">Submit</button>
+        <button onclick="generateCaptcha()">Regenerate</button>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        const images = [
+            { src: 'images.jpg', type: 'car' },
+            { src: 'dog1.avif', type: 'dog' },
+            { src: '07_GT_Front_34_Dynamic-1_crop-16x9.webp', type: 'car' },
+            { src: 'cat1.jpg', type: 'cat' },
+            { src: '4b14ab0c7868451baf5912779f112f40.jpg', type: 'car' },
+            { src: 'dog2.avif', type: 'dog' },
+            { src: 'cat2.avif', type: 'cat' },
+            { src: 'dog3.webp', type: 'dog' },
+            { src: 'cat3.jpg', type: 'cat' }
+        ];
+
+        function generateCaptcha() {
+            const shuffledImages = images.sort(() => 0.5 - Math.random());
+            const captchaContainer = document.getElementById('captcha');
+            captchaContainer.innerHTML = '';
+
+            shuffledImages.forEach((image, index) => {
+                const img = document.createElement('img');
+                img.src = image.src;
+                img.dataset.type = image.type;
+                img.dataset.selected = 'false';
+
+                img.onclick = () => {
+                    if (img.dataset.selected === 'false') {
+                        img.dataset.selected = 'true';
+                        img.classList.add('selected');
+                    } else {
+                        img.dataset.selected = 'false';
+                        img.classList.remove('selected');
+                    }
+                };
+
+                captchaContainer.appendChild(img);
+            });
+
+            document.getElementById('message').textContent = '';
+        }
+
+        function validateCaptcha() {
+            const selectedImages = document.querySelectorAll('.captcha img.selected');
+            const selectedCars = Array.from(selectedImages).filter(img => img.dataset.type === 'car');
+
+            const messageElement = document.getElementById('message');
+            if (selectedCars.length === 3 && selectedImages.length === 3) {
+                messageElement.textContent = 'CAPTCHA verified successfully!';
+                messageElement.style.color = 'green';
+            } else {
+                messageElement.textContent = 'CAPTCHA verification failed. Try again.';
+                messageElement.style.color = 'red';
+            }
+        }
+
+        window.onload = generateCaptcha;
+    </script>
+</body>
+</html>
+
